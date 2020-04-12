@@ -1,3 +1,4 @@
+var PORT = 5000;
 var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
@@ -35,7 +36,7 @@ app.get("/campgrounds/new",function(req, res){
     res.render("newCamp");
 });
 
-app.listen(3000, function(){
+app.listen(PORT, function(){
     console.log("The YelpCamp Server has Started.");
 });
 
