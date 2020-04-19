@@ -6,39 +6,19 @@ var PORT        = process.env.PORT || 5000,
     Campground  = require("./models/campground"),
     seedDB      = require("./seeds");
 
-seedDB();
-mongoose.connect("mongodb://localhost/yelp_camp", {useNewUrlParser: true, useUnifiedTopology: true});
 
-// Campground.create(
-//     {
-//         name:"Salmon Creek", 
-//         image:"https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80",
-//         description: "Nice place with amazing view."
-//     }, function(err, campground){
-//         if (err){
-//             console.log(err);
-//         }
-//         else{
-//             console.log("Newly Created Campground.");
-//             console.log(campground);
-//         }
-//     });
+seedDB();
+mongoose.connect("mongodb://localhost/yelp_camp", 
+    {
+        useNewUrlParser: true, 
+        useUnifiedTopology: true
+    }
+);
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
-// {name:"Salmon Creek", image:"https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"},
-// {name:"Granite Hill", image:"https://images.unsplash.com/photo-1532339142463-fd0a8979791a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"},
-// {name:"Mountain Goat's Rest", image:"https://images.unsplash.com/photo-1510312305653-8ed496efae75?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=967&q=80"},
-// {name:"Salmon Creek", image:"https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"},
-// {name:"Granite Hill", image:"https://images.unsplash.com/photo-1532339142463-fd0a8979791a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"},
-// {name:"Mountain Goat's Rest", image:"https://images.unsplash.com/photo-1510312305653-8ed496efae75?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=967&q=80"},
-// {name:"Salmon Creek", image:"https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"},
-// {name:"Granite Hill", image:"https://images.unsplash.com/photo-1532339142463-fd0a8979791a?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"},
-// {name:"Mountain Goat's Rest", image:"https://images.unsplash.com/photo-1510312305653-8ed496efae75?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=967&q=80"}
-
-
-
+// Routes:
 app.get("/", function(req, res){
     res.render("landing page");
 });
@@ -57,7 +37,11 @@ app.get("/campgrounds", function(req, res){
 });
 
 app.post("/campgrounds", function(req, res){
-    var newCamp = {name: req.body.name, image: req.body.image, description: req.body.description};
+    var newCamp = {
+        name: req.body.name, 
+        image: req.body.image, 
+        description: req.body.description
+    };
     Campground.create(newCamp, function(err, newlyCreatedCamp){
         if (err){
             console.log(err);
@@ -82,8 +66,6 @@ app.get("/campgrounds/:id",function(req, res){
             res.render("show", {campground: requestedCampground});
         }
     });
-    
-
 });
 
 app.listen(PORT, function(){
