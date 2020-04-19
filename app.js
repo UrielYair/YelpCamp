@@ -2,9 +2,11 @@ var PORT        = process.env.PORT || 5000,
     express     = require("express"),
     app         = express(),
     bodyParser  = require("body-parser"),
-    mongoose = require("mongoose"),
-    Campground = require("./models/campgrounds");
+    mongoose    = require("mongoose"),
+    Campground  = require("./models/campground"),
+    seedDB      = require("./seeds");
 
+seedDB();
 mongoose.connect("mongodb://localhost/yelp_camp", {useNewUrlParser: true, useUnifiedTopology: true});
 
 // Campground.create(
