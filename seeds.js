@@ -2,7 +2,7 @@ const   mongoose    = require("mongoose"),
         Campground  = require("./models/campground"),
         Comment     = require("./models/comment");
 
-var data = [
+var seeds = [
     {
         name:"Akhziv campsite",
         image: "https://static.parks.org.il/wp-content/uploads/2018/06/GRP5505-e1534064757241.jpg",
@@ -20,42 +20,28 @@ var data = [
     }
 ];
 
-function seedDB(){
-    // remove all campgrounds
-    Campground.remove({},err=>{
-        if (err){
-            console.log(err);
-        }
-        console.log("Campgrounds removed!");
-        // add a few campgrounds
-        data.forEach(camp =>{
-            Campground.create(camp,(err,campground)=>{
-                if (err){
-                    console.log(err);
-                }
-                else {
-                    console.log("added a campground.");
-
-                    //create a comment
-                    Comment.create(
-                        {
-                            text: "This place are great, But I wish there was internet",
-                            author: "Uriel"
-                        }
-                        ,(err, comment)=>{
-                            if (err){
-                                console.log(err);
-                            }
-                            else{
-                                campground.comments.push(comment);
-                                campground.save();
-                                console.log("created new comment.");
-                            }
-                    });
-                }
+async function seedDB(){
+    try{
+        await Campground.remove({});
+        console.log("Campground removed.");
+        await Comment.remove({});
+        console.log("Comment removed.");
+        for(const seed of seeds){
+            let campground = await Campground.create(seed);
+            console.log("Campground created.");
+            let comment = await Comment.create({
+                    text: "Bring food with you! :)",
+                    author: "John Doe"
             });
-        });
-    });
+            console.log("Comment created.");
+            campground.comments.push(comment);
+            campground.save();
+            console.log("Comment added to campground.");
+        }
+    }
+    catch(err){
+        console.log(err);
+    }
 }
 
 module.exports = seedDB;
