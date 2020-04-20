@@ -1,12 +1,12 @@
-var PORT        = process.env.PORT || 5000,
-    DATABASEURL = process.env.DATABASEURL || "mongodb://localhost/yelp_camp";
-    express     = require("express"),
-    app         = express(),
-    bodyParser  = require("body-parser"),
-    mongoose    = require("mongoose"),
-    Campground  = require("./models/campground"),
-    Comment     = require("./models/comment"),
-    seedDB      = require("./seeds");
+const   PORT        = process.env.PORT || 5000,
+        DATABASEURL = process.env.DATABASEURL || "mongodb://localhost/yelp_camp";
+        express     = require("express"),
+        app         = express(),
+        bodyParser  = require("body-parser"),
+        mongoose    = require("mongoose"),
+        Campground  = require("./models/campground"),
+        Comment     = require("./models/comment"),
+        seedDB      = require("./seeds");
 
 
 mongoose.connect(DATABASEURL, 
@@ -17,6 +17,7 @@ mongoose.connect(DATABASEURL,
 );
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
+app.use(express.static(__dirname + "/public"));
 seedDB();
 
 
