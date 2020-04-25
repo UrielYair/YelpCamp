@@ -143,6 +143,19 @@ app.post('/register',(req, res)=>{
     });
 });
 
+// Auth Routes:
+app.get('/login', (req, res)=>{
+    res.render('login');
+});
+
+app.post('/login', passport.authenticate('local',
+    {
+        successRedirect: '/campgrounds',
+        failureRedirect: '/login'
+    }), function(req, res){}
+);
+
+
 app.listen(PORT, function(){
     console.log("The YelpCamp Server has Started.");
 });
