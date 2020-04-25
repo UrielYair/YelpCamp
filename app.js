@@ -11,6 +11,11 @@ const   PORT            = process.env.PORT || 3000,
         User            = require('./models/user'), 
         seedDB          = require("./seeds");
 
+// requiring routes:
+const   indexRoutes     = require('./routes/index'),
+        campgroundRoute = require('./routes/campgrounds'),
+        commentRoutes   = require('./routes/comments');
+        
 
 mongoose.connect(DATABASEURL, 
     {
@@ -41,138 +46,9 @@ app.use(function(req, res, next){
     next();
 });
 
-// Routes:
-app.get("/", function(req, res){
-    res.render("landing page");
-});
-
-// Index - show all campgrounds
-app.get("/campgrounds", function(req, res){
-    
-    Campground.find({}, function(err, allCampgrounds){
-        if (err){
-            console.log(err);
-        }
-        else{
-            res.render("campgrounds/index", {campgrounds: allCampgrounds, currentUser: req.user});
-        }
-    });
-    
-});
-
-// New - show form to create new campground.
-app.get("/campgrounds/new", isLoggedIn,function(req, res){
-    res.render("campgrounds/newCamp");
-});
-
-
-// Create - add new campground to DB.
-app.post("/campgrounds", isLoggedIn,function(req, res){
-    var newCamp = {
-        name: req.body.name, 
-        image: req.body.image, 
-        description: req.body.description
-    };
-    Campground.create(newCamp, function(err, newlyCreatedCamp){
-        if (err){
-            console.log(err);
-        }
-        else{
-            res.redirect("/campgrounds");
-        }
-    });
-});
-
-
-// Show - show more info about specific campground.
-app.get("/campgrounds/:id",function(req, res){    
-    Campground.findById(req.params.id).populate("comments").exec(function(err, requestedCampground){
-        if(err){
-            console.log(err);
-        }
-        else{
-            // console.log(requestedCampground);
-            res.render("campgrounds/show", {campground: requestedCampground});
-        }
-    });
-});
-
-// Comments Routes:
-app.get("/campgrounds/:id/comments/new", isLoggedIn, (req, res)=>{
-    //find campground by id.
-    Campground.findById(req.params.id, (err, campground)=>{
-        if (err){
-            console.log(err);
-        }
-        else{
-            res.render("comments/new", ({campground: campground}));
-        }
-    })
-});
-
-app.post("/campgrounds/:id/comments/", isLoggedIn,(req,res)=>{
-    //lookout campground using ID
-    Campground.findById(req.params.id,(err, campground)=>{
-        if (err){
-            console.log(err);
-            res.redirect("/campgrounds");
-        }
-        else {
-            //create new comment
-            Comment.create(req.body.comment,(err,comment)=>{
-                if (err){
-                    console.log(err);
-                }
-                //connect new comment to campground
-                campground.comments.push(comment);
-                campground.save();
-                res.redirect("/campgrounds/" + campground._id);
-            });
-        }
-    });    
-});
-
-// Auth Routes:
-app.get('/register', (req, res)=>{
-    res.render('register');
-});
-
-app.post('/register',(req, res)=>{
-    var newUser = new User({username: req.body.username});
-    User.register(newUser, req.body.password, (err, user)=>{
-        if (err){
-            console.log(err);
-            return res.redirect('register');
-        }
-        passport.authenticate('local')(req, res,()=>{
-            res.redirect('/campgrounds');
-        });
-    });
-});
-
-// Auth Routes:
-app.get('/login', (req, res)=>{
-    res.render('login');
-});
-
-app.post('/login', passport.authenticate('local',
-    {
-        successRedirect: '/campgrounds',
-        failureRedirect: '/login'
-    }), function(req, res){}
-);
-
-app.get('/logout', (req, res)=>{
-    req.logout();
-    res.redirect('/campgrounds');
-});
-
-function isLoggedIn(req, res, next){
-    if (req.isAuthenticated()){
-        return next();
-    }
-    res.redirect('/login');
-}
+app.use("/", indexRoutes);
+app.use("/campgrounds", campgroundRoute);
+app.use("/campgrounds/:id/comments", commentRoutes);
 
 app.listen(PORT, function(){
     console.log("The YelpCamp Server has Started.");
