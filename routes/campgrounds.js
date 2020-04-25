@@ -24,17 +24,24 @@ router.get("/new", isLoggedIn,function(req, res){
 
 // Create - add new campground to DB.
 router.post("/", isLoggedIn,function(req, res){
+    var author = {
+        id: req.user._id,
+        username: req.user.username
+    };
+
     var newCamp = {
         name: req.body.name, 
         image: req.body.image, 
-        description: req.body.description
+        description: req.body.description,
+        author: author
     };
+
     Campground.create(newCamp, function(err, newlyCreatedCamp){
         if (err){
             console.log(err);
         }
         else{
-            res.redirect("/");
+            res.redirect("/campgrounds");
         }
     });
 });
