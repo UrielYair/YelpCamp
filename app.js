@@ -26,7 +26,7 @@ mongoose.connect(DATABASEURL,
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
-seedDB();
+// seedDB(); //seeds the DB
 
 // Passport configuration:
 app.use(require('express-session')({
