@@ -1,12 +1,15 @@
-const   PORT        = process.env.PORT || 3000,
-        DATABASEURL = process.env.DATABASEURL || "mongodb://localhost/yelp_camp";
-        express     = require("express"),
-        app         = express(),
-        bodyParser  = require("body-parser"),
-        mongoose    = require("mongoose"),
-        Campground  = require("./models/campground"),
-        Comment     = require("./models/comment"),
-        seedDB      = require("./seeds");
+const   PORT            = process.env.PORT || 3000,
+        DATABASEURL     = process.env.DATABASEURL || "mongodb://localhost/yelp_camp";
+        express         = require("express"),
+        app             = express(),
+        bodyParser      = require("body-parser"),
+        mongoose        = require("mongoose"),
+        passport        = require('passport'),
+        LocalStrategy   = require('passport-local'),
+        Campground      = require("./models/campground"),
+        Comment         = require("./models/comment"),
+        User            = require('./models/user'), 
+        seedDB          = require("./seeds");
 
 
 mongoose.connect(DATABASEURL, 
@@ -20,6 +23,18 @@ app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 seedDB();
 
+// Passport configuration:
+app.use(require('express-session')({
+    secret: "learning is great", // TODO: export to env variable.
+    resave: false,
+    saveUninitialized: false
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // Routes:
 app.get("/", function(req, res){
@@ -107,9 +122,7 @@ app.post("/campgrounds/:id/comments/",(req,res)=>{
                 res.redirect("/campgrounds/" + campground._id);
             });
         }
-    });
-    //redirect to campground show page
-    
+    });    
 });
 
 app.listen(PORT, function(){
