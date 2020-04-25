@@ -125,6 +125,24 @@ app.post("/campgrounds/:id/comments/",(req,res)=>{
     });    
 });
 
+// Auth Routes:
+app.get('/register', (req, res)=>{
+    res.render('register');
+});
+
+app.post('/register',(req, res)=>{
+    var newUser = new User({username: req.body.username});
+    User.register(newUser, req.body.password, (err, user)=>{
+        if (err){
+            console.log(err);
+            return res.redirect('register');
+        }
+        passport.authenticate('local')(req, res,()=>{
+            res.redirect('/campgrounds');
+        });
+    });
+});
+
 app.listen(PORT, function(){
     console.log("The YelpCamp Server has Started.");
 });
