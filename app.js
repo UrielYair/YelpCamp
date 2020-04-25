@@ -36,6 +36,11 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+app.use(function(req, res, next){
+    res.locals.currentUser = req.user;
+    next();
+});
+
 // Routes:
 app.get("/", function(req, res){
     res.render("landing page");
@@ -49,14 +54,20 @@ app.get("/campgrounds", function(req, res){
             console.log(err);
         }
         else{
-            res.render("campgrounds/index", {campgrounds: allCampgrounds});
+            res.render("campgrounds/index", {campgrounds: allCampgrounds, currentUser: req.user});
         }
     });
     
 });
 
+// New - show form to create new campground.
+app.get("/campgrounds/new", isLoggedIn,function(req, res){
+    res.render("campgrounds/newCamp");
+});
+
+
 // Create - add new campground to DB.
-app.post("/campgrounds", function(req, res){
+app.post("/campgrounds", isLoggedIn,function(req, res){
     var newCamp = {
         name: req.body.name, 
         image: req.body.image, 
@@ -72,10 +83,6 @@ app.post("/campgrounds", function(req, res){
     });
 });
 
-// New - show form to create new campground.
-app.get("/campgrounds/new",function(req, res){
-    res.render("campgrounds/newCamp");
-});
 
 // Show - show more info about specific campground.
 app.get("/campgrounds/:id",function(req, res){    
