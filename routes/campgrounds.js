@@ -1,7 +1,7 @@
 const   express     = require('express'),
         router      = express.Router(),
         Campground  = require('../models/campground');
-
+        
 // Index - show all campgrounds
 router.get("/", function(req, res){
     
@@ -81,6 +81,20 @@ router.put("/:id", (req, res)=>{
         }
         else{
             res.redirect("/campgrounds/"+req.params.id);
+        }
+    });
+});
+
+// DELETE campground route:
+router.delete("/:id",(req, res)=>{
+    Campground.findById(req.params.id, (err, campground)=>{
+        if (err){
+            console.log(err);
+            res.redirect("/campgrounds");
+        }
+        else{
+            campground.remove();
+            res.redirect("/campgrounds");
         }
     });
 });
