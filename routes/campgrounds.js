@@ -31,7 +31,8 @@ router.post("/", middleware.isLoggedIn, function(req, res){
     };
 
     var newCamp = {
-        name: req.body.name, 
+        name: req.body.name,
+        price: req.body.price,
         image: req.body.image, 
         description: req.body.description,
         author: author
